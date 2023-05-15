@@ -1,4 +1,11 @@
-# GitLab Runner Helm Chart
+# GKE Gitlab Runner
 
-This chart deploys a GitLab Runner instance into your Kubernetes
-cluster. For more information, please review [our documentation](https://docs.gitlab.com/charts/charts/gitlab/gitlab-runner).
+## Setup
+См. https://docs.gitlab.com/charts/charts/gitlab/gitlab-runner/
+
+## Add-ons
+```
+kubectl apply -f add-ons/cleanup.yml
+kubectl apply -f add-ons/trusted-ca.yml
+kubectl apply -f add-ons/node-custom-setup.yml
+```
