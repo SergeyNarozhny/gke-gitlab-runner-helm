@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup
+  namespace: kube-system
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cleanup
+          containers:
+          - name: cleanup
+            image: common-harbor.service.gl.mx/dockerhub/bitnami/kubectl:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - -c
+            - sleep 60 && kubectl -n kube-system delete pods `kubectl -n kube-system get pod | grep -E 'Error|Container|Completed' | awk '{ print $1}'`
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-gitlab-runner
+  namespace: kube-system
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cleanup
+          containers:
+          - name: cleanup-gitlab-runner
+            image: common-harbor.service.gl.mx/dockerhub/bitnami/kubectl:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - -c
+            - sleep 60 && kubectl -n gitlab-runner delete pods `kubectl -n gitlab-runner get pod | grep -E 'Error|Completed' | awk '{ print $1}'`
+          restartPolicy: OnFailure
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: cleanclusteradmin
+subjects:
+- kind: ServiceAccount
+  name: cleanup # Name is case sensitive
+  namespace: kube-system
+  apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: ""

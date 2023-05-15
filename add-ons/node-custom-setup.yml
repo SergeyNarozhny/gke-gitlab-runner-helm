@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: kube-system
+  name: node-custom-setup
+  labels:
+    k8s-app: node-custom-setup
+spec:
+  selector:
+    matchLabels:
+      k8s-app: node-custom-setup
+  template:
+    metadata:
+      labels:
+        k8s-app: node-custom-setup
+    spec:
+      hostPID: true
+      hostNetwork: true
+      initContainers:
+      - name: init-node
+        command: ["bash"]
+        args: ["-c", "$(SETUP_SCRIPT)"]
+        image: debian
+        env:
+        - name: TRUSTED_CERT
+          valueFrom:
+            configMapKeyRef:
+              name: trusted-ca
+              key: ca.crt
+        - name: SETUP_SCRIPT
+          valueFrom:
+            configMapKeyRef:
+              name: setup-script
+              key: setup.sh
+        volumeMounts:
+          - name: etc
+            mountPath: "/mnt/etc"
+        securityContext:
+          privileged: true
+      volumes:
+      - name: etc
+        hostPath:
+          path: /etc
+      containers:
+      - name: wait
+        image: k8s.gcr.io/pause:3.1
