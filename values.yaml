@@ -325,6 +325,8 @@ runners:
         namespace = "{{.Release.Namespace}}"
         image = "common-harbor.service.gl.mx/dockehub/library/alpine:3.16"
         helper_image = "common-harbor.service.gl.mx/registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-6d480948"
+        [runners.kubernetes.node_selector]
+          lifecycle = "preemptible"
   ## Which executor should be used
   ##
   # executor: kubernetes
