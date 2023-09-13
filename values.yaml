@@ -12,8 +12,8 @@
 ##       these images run on different user IDs.
 ##
 image:
-  registry: common-harbor.service.gl.mx
-  image: dockerhub/gitlab/gitlab-runner
+  registry: common-artifactory.service.gl.mx
+  image: docker-io/gitlab/gitlab-runner
   tag: alpine3.15-v15.7.1
 
 ## Specify a imagePullPolicy for the main runner deployment
@@ -323,8 +323,8 @@ runners:
       name = "gks-build-runner-01"
       [runners.kubernetes]
         namespace = "{{.Release.Namespace}}"
-        image = "common-harbor.service.gl.mx/dockehub/library/alpine:3.16"
-        helper_image = "common-harbor.service.gl.mx/registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-6d480948"
+        image = "common-artifactory.service.gl.mx/docker-io/library/alpine:3.16"
+        helper_image = "common-artifactory.service.gl.mx/docker-io/gitlab/gitlab-runner-helper:x86_64-latest"
         [runners.kubernetes.node_selector]
           lifecycle = "preemptible"
   ## Which executor should be used
